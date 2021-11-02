@@ -43,9 +43,16 @@ body {
   .game {
     display: flex;
     flex-direction: row;
+    position: relative;
   }
   
   .game-info {
     margin-left: 20px;
+  }
+
+  .info-order{
+    position: absolute;
+    left: 60%;
+    top: 0%;
   }
   

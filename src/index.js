@@ -98,6 +98,12 @@ class Game extends React.Component {
     });
   }
 
+  toggle() {
+    this.setState({
+      isAscending: !this.state.isAscending,
+    });
+  }
+
   /**
    * squares:长度为9的数组，记录棋盘状态；
    * .slice() 函数对 squares 数组进行拷贝，而非直接修改现有的数组。
@@ -119,6 +125,7 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
+      isAscending: true,
     };
   }
   render() {
@@ -128,16 +135,19 @@ class Game extends React.Component {
 
     // step是item，move是index
     const moves = history.map((step, move) => {
-      const desc = move
-        ? `Go to move #${move}, coordinate:(${step.coordinates.join(',')})`
+      const index = this.state.isAscending ? move : history.length - move - 1;
+      const desc = index
+        ? `Go to index #${index}, coordinate:(${step.coordinates.join(',')})`
         : 'Go to game start';
       return (
-        <li key={move}>
+        <li key={index}>
           <button
             onClick={() => {
-              this.jumpTo(move);
+              this.jumpTo(index);
             }}
-            style={move === this.state.stepNumber ? { fontWeight: 'bold' } : {}}
+            style={
+              index === this.state.stepNumber ? { fontWeight: 'bold' } : {}
+            }
           >
             {desc}
           </button>
@@ -165,6 +175,15 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
+        </div>
+        <div className="info-order">
+          <button
+            onClick={() => {
+              this.toggle();
+            }}
+          >
+            {this.state.isAscending ? '正序' : '降序'}
+          </button>
         </div>
       </div>
     );
