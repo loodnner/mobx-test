@@ -138,6 +138,7 @@ class Game extends React.Component {
             onClick={() => {
               this.jumpTo(move);
             }}
+            style={move === this.state.stepNumber ? { fontWeight: 'bold' } : {}}
           >
             {desc}
           </button>
