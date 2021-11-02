@@ -11,6 +11,11 @@ import './index.css';
 //   );
 // }
 
+/**
+ * Square：单个格子，无state，靠props传入value和onClick的回调
+ * Board：九宫格，挂9个square，封装一个renderSquare的函数，params是0-9，通过props接收，并传递
+ * Game：分成棋盘区和历史信息区两部分
+ */
 class Square extends React.Component {
   render() {
     return (
@@ -26,6 +31,7 @@ class Square extends React.Component {
   }
 }
 
+// 在board里面传入了每个格子的标志0-8
 class Board extends React.Component {
   renderSquare(i) {
     return (
@@ -66,14 +72,19 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
+    const coordinates = current.coordinates.slice();
+    // 如果已经有值或者成功就return
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'x' : 'o';
+    coordinates[0] = Math.floor(i / 3) + 1;
+    coordinates[1] = (i % 3) + 1;
     this.setState({
       history: history.concat([
         {
           squares: squares,
+          coordinates: coordinates,
         },
       ]),
       xIsNext: !this.state.xIsNext,
@@ -97,12 +108,14 @@ class Game extends React.Component {
    *
    */
 
+  // 在构造函数中初始化 state
   constructor(props) {
     super(props);
     this.state = {
       history: [
         {
           squares: Array(9).fill(null),
+          coordinates: Array(2),
         },
       ],
       stepNumber: 0,
@@ -116,7 +129,9 @@ class Game extends React.Component {
 
     // step是item，move是index
     const moves = history.map((step, move) => {
-      const desc = move ? 'Go to move #' + move : 'Go to game start';
+      const desc = move
+        ? `Go to move #${move}, coordinate:(${step.coordinates.join(',')})`
+        : 'Go to game start';
       return (
         <li key={move}>
           <button
