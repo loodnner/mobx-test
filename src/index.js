@@ -79,6 +79,9 @@ class Game extends React.Component {
       return;
     }
     squares[i] = this.state.xIsNext ? 'x' : 'o';
+    if (squares.indexOf(null) === -1 && !calculateWinner(squares)) {
+      alert('Game Over');
+    }
     coordinates[0] = Math.floor(i / 3) + 1;
     coordinates[1] = (i % 3) + 1;
     this.setState({
