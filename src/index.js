@@ -20,7 +20,7 @@ class Square extends React.Component {
   render() {
     return (
       <button
-        className="square"
+        className={`square ${this.props.isWinner ? 'high-light' : ''}`}
         onClick={() => {
           this.props.onClick();
         }}
@@ -39,13 +39,15 @@ const tableStruc = [
   [6, 7, 8],
 ];
 class Board extends React.Component {
-  renderSquare(i) {
+  renderSquare(i, index) {
     return (
       <Square
         value={this.props.squares[i]}
         onClick={() => {
           this.props.onClick(i);
         }}
+        key={index}
+        isWinner={this.props.location && this.props.location.indexOf(i) !== -1}
       />
     );
   }
@@ -53,10 +55,10 @@ class Board extends React.Component {
   render() {
     return (
       <div>
-        {tableStruc.map((item) => {
+        {tableStruc.map((item, index) => {
           return (
-            <div className="board-row">
-              {item.map((item) => this.renderSquare(item))}
+            <div className="board-row" key={index}>
+              {item.map((item, index) => this.renderSquare(item, index))}
             </div>
           );
         })}
@@ -131,7 +133,7 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const { winner, location } = calculateWinner(current.squares) || {};
 
     // step是item，move是index
     const moves = history.map((step, move) => {
@@ -170,6 +172,7 @@ class Game extends React.Component {
             onClick={(i) => {
               this.handleClick(i);
             }}
+            location={location}
           />
         </div>
         <div className="game-info">
@@ -208,7 +211,11 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      const winnerInfo = {
+        winner: squares[a],
+        location: [a, b, c],
+      };
+      return winnerInfo;
     }
   }
   return null;
